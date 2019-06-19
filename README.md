@@ -14,7 +14,8 @@ Sea ice is both in motion and evolves through time.  Ice floes sampled by ICESat
 ## Application Example
 
 
-## Sample Data
+## Data
+
 
 
 ## Specific Questions
