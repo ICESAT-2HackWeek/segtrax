@@ -15,9 +15,9 @@ Sea ice is both in motion and evolves through time.  Ice floes sampled by ICESat
 
 
 ## Data
--ATL10 - sea ice freeboard product
--NSIDC sea ice motion vectors (https://nsidc.org/data/nsidc-0116)
--ERA-Interim daily 2 m air temperatures (https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim)
+- ATL10 - sea ice freeboard product
+- NSIDC sea ice motion vectors (https://nsidc.org/data/nsidc-0116)
+- ERA-Interim daily 2 m air temperatures (https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim)
 
 
 ## Specific Questions
