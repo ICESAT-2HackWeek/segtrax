@@ -1,0 +1,7 @@
+# Test Trajectory class
+
+import datetime as dt
+
+from trajectory import Trajectory
+
+def main():
