@@ -39,6 +39,7 @@ class Trajectory:
         self.date.append(date)
         self.latitude.append(latitude)
         self.longitude.append(longitude)
+        self.hf.append(hf)
         
 
     def __repr__(self):
@@ -56,5 +57,11 @@ class Trajectory:
         self.temperature.append(fill_value)
         self.fdd.append(fill_value)
         self.hsnow.append(fill_value)
+        
+    
+    def get_coords(self):
+        """Returns a tuple of coordinates"""
+        return (self.date, self.longitude, self.latitude)
+    
         
 
