@@ -22,13 +22,17 @@ def getATL10(fileT, beam='gt1r'):
     
     f1 = h5py.File(fileT, 'r')
     
+    # Freeboard data
     freeboard=f1[beam]['freeboard_beam_segment']['beam_freeboard']['beam_fb_height'][:]
 
     freeboard_confidence=f1[beam]['freeboard_beam_segment']['beam_freeboard']['beam_fb_confidence'][:]
     freeboard_quality=f1[beam]['freeboard_beam_segment']['beam_freeboard']['beam_fb_quality_flag'][:]
     
+    # Lat and lon data
     lons=f1[beam]['freeboard_beam_segment']['beam_freeboard']['longitude'][:]
     lats=f1[beam]['freeboard_beam_segment']['beam_freeboard']['latitude'][:]
+    
+    # Date and time data
     deltaTime=f1[beam]['freeboard_beam_segment']['beam_freeboard']['delta_time'][:]-f1[beam]['freeboard_beam_segment']['beam_freeboard']['delta_time'][0]
     
     # #Add this value to delta time parameters to compute full gps_seconds
@@ -36,7 +40,6 @@ def getATL10(fileT, beam='gt1r'):
     
     # Conversion of delta_time to a calendar date
     temp = ut.convert_GPS_time(atlas_epoch[0] + deltaTime, OFFSET=0.0)
-    
     
     year = temp['year'][:].astype('int')
     month = temp['month'][:].astype('int')
@@ -51,5 +54,11 @@ def getATL10(fileT, beam='gt1r'):
                       'year':year, 'month':month, 'day':day})
     
     dFtimepd=pd.to_datetime(dFtime)
+
+    # Segment ID
+    segment_id = f1[beam]['freeboard_beam_segment']['beam_freeboard']['height_segment_id'][:]
     
-    return lons, lats, dFtimepd, freeboard
+    # Segment length
+    segment_length = f1[beam]['freeboard_beam_segment']['beam_freeboard']['seg_dist_x'][:]
+    
+    return segment_id, segment_length, dFtimepd, lons, lats, freeboard
