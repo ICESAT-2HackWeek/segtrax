@@ -1,3 +1,7 @@
+*.pyc
+*.h5
+*.nc
+
 data/_MACOSX/*
 data/atl10/*
 data/era_i/*
