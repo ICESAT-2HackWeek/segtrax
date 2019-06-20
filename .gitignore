@@ -1,4 +1,4 @@
 data/_MACOSX/*
 data/atl10/*
 data/era_i/*
-notebooks/.ipynb_checkpoints/*
+.ipynb_checkpoints
