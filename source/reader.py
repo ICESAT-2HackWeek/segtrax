@@ -113,3 +113,7 @@ def adjust(files):
     merged = merged.assign_coords(day=time)
     
     return merged
+
+def get_ice_motion(fname):
+    ice_motion = xr.open_mfdataset(fname,engine='netcdf4',data_vars='different')
+    return ice_motion
