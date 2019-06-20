@@ -4,6 +4,7 @@ import numpy as np
 import h5py
 import pandas as pd
 import utils as ut
+import xarray as xr
 
 def getATL10(fileT, beam='gt1r'):
     """ ATL10 reader
@@ -62,3 +63,46 @@ def getATL10(fileT, beam='gt1r'):
     segment_length = f1[beam]['freeboard_beam_segment']['beam_freeboard']['seg_dist_x'][:]
     
     return segment_id, segment_length, dFtimepd, lons, lats, freeboard
+
+def getERAI(i):
+    """Function to read ERA-Interim 6-hourly T2M temperature
+    
+    Input: i, in form ['Year-Month'] for month that you want to read in
+    Output: data, T2M for month i
+    """
+    fname = '/home/segtrax/data/era-interim-t2m.'+i+'.nc'
+    data = xr.open_mfdataset(fname)
+    return data
+
+def daily_means(self,i):
+    """Function to calculate daily means from 6 hourly data from ERA-I t2m data
+    Needs to loop because the times are not consistent between months.
+
+    Input: A single month of 6 hourly
+    Output: Daily means
+    """
+    return self.groupby('time.day').mean('time')
+
+def adjust(months):
+    """Loops through ERA-Interim files, calculates, daily means, and concatenates them together
+    
+    Input: months list 'Year-Month'
+    Output: Merged 3D xarray dataset with t2m
+    """
+    for i in months:
+        month = getERAI(i)
+        nmonth = len(month.time)
+        data = month.isel(time=slice(0,nmonth-1))
+
+        daily = daily_means(data,i)
+        if i == months[0]:
+            merged = daily
+        else:
+            merged = xr.concat((merged,daily),'day')
+            
+    start,end = months[-1].split('-')
+    end_new = str(int(end)+1)
+    time = np.arange(np.datetime64(months[0]+'-01'),np.datetime64(start+'-'+end_new.zfill(2)))
+    merged = merged.assign_coords(day=time)
+    
+    return merged
