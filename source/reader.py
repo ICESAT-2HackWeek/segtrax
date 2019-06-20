@@ -3,7 +3,7 @@
 import numpy as np
 import h5py
 import pandas as pd
-import utils as ut
+import utilities as ut
 import xarray as xr
 
 def getATL10(fileT, beam='gt1r'):
@@ -64,17 +64,16 @@ def getATL10(fileT, beam='gt1r'):
     
     return segment_id, segment_length, dFtimepd, lons, lats, freeboard
 
-def getERAI(i):
+def getERAI(fname):
     """Function to read ERA-Interim 6-hourly T2M temperature
     
     Input: i, in form ['Year-Month'] for month that you want to read in
     Output: data, T2M for month i
     """
-    fname = '/home/segtrax/data/era-interim-t2m.'+i+'.nc'
     data = xr.open_mfdataset(fname)
     return data
 
-def daily_means(self,i):
+def daily_means(self):
     """Function to calculate daily means from 6 hourly data from ERA-I t2m data
     Needs to loop because the times are not consistent between months.
 
@@ -83,26 +82,38 @@ def daily_means(self,i):
     """
     return self.groupby('time.day').mean('time')
 
-def adjust(months):
+def weekly_means(self):
+    return self.resample(day='7D').sum('day')
+
+def adjust(files):
     """Loops through ERA-Interim files, calculates, daily means, and concatenates them together
     
     Input: months list 'Year-Month'
     Output: Merged 3D xarray dataset with t2m
     """
-    for i in months:
-        month = getERAI(i)
+    for f in files:
+        month = getERAI(f)
         nmonth = len(month.time)
         data = month.isel(time=slice(0,nmonth-1))
 
-        daily = daily_means(data,i)
-        if i == months[0]:
+        daily = daily_means(data)
+        if f == files[0]:
+            yrstrt,monstrt,hour = str(data.time.values[0]).split('-')
+            print('starting year: ',yrstrt,', starting month: ',monstrt)
             merged = daily
         else:
             merged = xr.concat((merged,daily),'day')
-            
-    start,end = months[-1].split('-')
-    end_new = str(int(end)+1)
-    time = np.arange(np.datetime64(months[0]+'-01'),np.datetime64(start+'-'+end_new.zfill(2)))
+        # problem here with the wrong file being selected if using different input files
+        if f == files[2]:
+            yrend,monend,hour = str(data.time.values[0]).split('-')
+            print('ending year: ',yrend,', ending month: ',monend)
+
+    end_new = str(int(monend)+1)        
+    time = np.arange(np.datetime64(str(yrstrt)+'-'+str(monstrt)+'-01'),np.datetime64(str(yrend)+'-'+end_new.zfill(2)))
     merged = merged.assign_coords(day=time)
     
     return merged
+
+def get_ice_motion(fname):
+    ice_motion = xr.open_mfdataset(fname,engine='netcdf4',data_vars='different')
+    return ice_motion
