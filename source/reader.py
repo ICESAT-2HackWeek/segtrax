@@ -34,7 +34,7 @@ def getATL10(fileT, beam='gt1r', maxFreeboard=10.0):
     lats=f1[beam]['freeboard_beam_segment']['beam_freeboard']['latitude'][:]
     
     # Date and time data
-    deltaTime=f1[beam]['freeboard_beam_segment']['beam_freeboard']['delta_time'][:]-f1[beam]['freeboard_beam_segment']['beam_freeboard']['delta_time'][0]
+    deltaTime=f1[beam]['freeboard_beam_segment']['beam_freeboard']['delta_time'][:]
     
     # #Add this value to delta time parameters to compute full gps_seconds
     atlas_epoch=f1['/ancillary_data/atlas_sdp_gps_epoch'][:] 
@@ -60,9 +60,10 @@ def getATL10(fileT, beam='gt1r', maxFreeboard=10.0):
     segment_length = f1[beam]['freeboard_beam_segment']['beam_freeboard']['seg_dist_x'][:]
     
     # Add everything to pandas dataframe
-    dF = pd.DataFrame({'segment_id':segment_id, 'segment_length':segment_length, 'freeboard':freeboard, 
-                       'lon':lons, 'lat':lats, 'date':dFtimepd, 'delta_time':deltaTime, 'year':year, 'month':month, 'day':day})
+    dF = pd.DataFrame({'segment_id':segment_id, 'segment_length':segment_length, 'freeboard':freeboard, 'lon':lons, 'lat':lats, 
+                       'date':dFtimepd, 'delta_time':deltaTime, 'year':year, 'month':month, 'day':day})
     
+    # Remove data corresponding to erroneous freeboard values
     dF = dF[(dF['freeboard']>0)]
     dF = dF[(dF['freeboard']<maxFreeboard)]
 
