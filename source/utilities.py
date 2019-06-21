@@ -1,7 +1,32 @@
 # Utilities for segtrax
 import pyproj
 import numpy as np
+import scipy.interpolate as scinterp
 
+def interp_uv(x, y, u, v, xi, yi):
+    """Interpolates gridded (u, v) ice motion vectors to a set of points
+    
+    x - 1D or 2D array of x-coordinates
+    y - 1D or 2D array of y-coordinates
+    u - 2D array of u velocities
+    v - 2D array of v velocities
+    xi - 1D array-like of x-coords to interpolate to
+    yi - 1D array-like of y-coords to interpolate to
+    """
+    # Set NaN to -99.99 in u and v arrays
+    # - probably not the best approach but it will work for now
+    um = np.where(~np.isnan(u), u, -99.9)
+    vm = np.where(~np.isnan(v), v, -99.9)
+    
+    fu = scinterp.interp2d(x, y, um, kind='linear')
+    fv = scinterp.interp2d(x, y, vm, kind='linear')
+    
+    ui = np.array([fu(x_i, y_i) for x_i, y_i in zip(xi, yi)])
+    vi = np.array([fv(x_i, y_i) for x_i, y_i in zip(xi, yi)])
+    
+    return ui.flatten(), vi.flatten()
+    
+    
 def transform_coord(from_epsg, to_epsg, x, y):
     """Transform coordinates from proj1 to proj2 (EPSG num).
     
