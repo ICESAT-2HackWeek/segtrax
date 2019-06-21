@@ -23,4 +23,6 @@ Sea ice is both in motion and evolves through time.  Ice floes sampled by ICESat
 ## Workflow
 
 `import whiteboard`
+![map of the Arctic](IMG_9511.jpg)
 ![outline](IMG_9510.jpg)
+![advection psuedo code](IMG_9512.JPG)
