@@ -6,7 +6,7 @@ import pandas as pd
 import utilities as ut
 import xarray as xr
 
-def getATL10(fileT, beam='gt1r'):
+def getATL10(fileT, beam='gt1r', maxFreeboard=10.0):
     """ ATL10 reader
     Adapted from code written by Alek Petty, June 2018 (alek.a.petty@nasa.gov)
 
@@ -51,18 +51,25 @@ def getATL10(fileT, beam='gt1r'):
     dFtime=pd.DataFrame({'year':year, 'month':month, 'day':day, 
                         'hour':hour, 'minute':minute, 'second':second})
     
-    dF = pd.DataFrame({'freeboard':freeboard, 'lon':lons, 'lat':lats, 'delta_time':deltaTime,
-                      'year':year, 'month':month, 'day':day})
-    
     dFtimepd=pd.to_datetime(dFtime)
-
+    
     # Segment ID
     segment_id = f1[beam]['freeboard_beam_segment']['beam_freeboard']['height_segment_id'][:]
     
     # Segment length
     segment_length = f1[beam]['freeboard_beam_segment']['beam_freeboard']['seg_dist_x'][:]
     
-    return segment_id, segment_length, dFtimepd, lons, lats, freeboard
+    # Add everything to pandas dataframe
+    dF = pd.DataFrame({'segment_id':segment_id, 'segment_length':segment_length, 'freeboard':freeboard, 
+                       'lon':lons, 'lat':lats, 'date':dFtimepd, 'delta_time':deltaTime, 'year':year, 'month':month, 'day':day})
+    
+    dF = dF[(dF['freeboard']>0)]
+    dF = dF[(dF['freeboard']<maxFreeboard)]
+
+    # Reset row indexing
+    dF=dF.reset_index(drop=True)
+    
+    return dF
 
 def getERAI(fname):
     """Function to read ERA-Interim 6-hourly T2M temperature
