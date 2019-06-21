@@ -27,20 +27,15 @@ class Trajectory:
         self.segment_id = segment_id
         self.segment_length = segment_length
 
-        self.date = []
-        self.latitude = []
-        self.longitude = []
-        self.hf = []
+        self.date = [date]
+        self.latitude = [latitude]
+        self.longitude = [longitude]
+        self.hf = [hf]
         self.hice = []
         self.temperature = []
         self.fdd = []
         self.hsnow = [] 
-
-        self.date.append(date)
-        self.latitude.append(latitude)
-        self.longitude.append(longitude)
-        self.hf.append(hf)
-        
+       
 
     def __repr__(self):
         return f'Trajectory for segment {self.segment_id} with length {self.segment_length}'
